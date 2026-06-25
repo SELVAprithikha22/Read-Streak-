@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadStreak Login</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#6c5ce7,#8e7dff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    width:350px;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.logo{
+    text-align:center;
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#333;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:1px solid #ddd;
+    border-radius:10px;
+    outline:none;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#6c5ce7;
+    color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:10px;
+    font-size:16px;
+}
+
+button:hover{
+    background:#5848d6;
+}
+
+.switch{
+    text-align:center;
+    margin-top:15px;
+}
+
+.switch a{
+    color:#6c5ce7;
+    cursor:pointer;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.form{
+    display:none;
+}
+
+.form.active{
+    display:block;
+}
+
+.success{
+    text-align:center;
+    color:green;
+    margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="logo">📚</div>
+
+    <!-- SIGN IN -->
+    <div id="signin" class="form active">
+        <h2>Sign In</h2>
+
+        <input type="email" id="loginEmail" placeholder="Email">
+
+        <input type="password" id="loginPassword" placeholder="Password">
+
+        <button onclick="login()">Sign In</button>
+
+        <div class="switch">
+            Don't have an account?
+            <a onclick="showSignup()">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="signup" class="form">
+        <h2>Create Account</h2>
+
+        <input type="text" id="name" placeholder="Full Name">
+
+        <input type="email" id="email" placeholder="Email">
+
+        <input type="password" id="password" placeholder="Password">
+
+        <button onclick="signup()">Sign Up</button>
+       
+        <div class="switch">
+            Already have an account?
+            <a onclick="showSignin()">Sign In</a>
+        </div>
+    </div>
+
+    <p id="message" class="success"></p>
+
+</div>
+
+<script>
+
+function showSignup(){
+    document.getElementById("signin").classList.remove("active");
+    document.getElementById("signup").classList.add("active");
+}
+
+function showSignin(){
+    document.getElementById("signup").classList.remove("active");
+    document.getElementById("signin").classList.add("active");
+}
+
+function signup(){
+
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    if(name && email && password){
+
+        // Save user data
+        localStorage.setItem("name", name);
+        localStorage.setItem("email", email);
+        localStorage.setItem("password", password);
+
+        document.getElementById("message").innerHTML =
+        "✅ Account Created Successfully!";
+
+        // Clear fields
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+
+        // Switch to Sign In
+        showSignin();
+
+    }else{
+        alert("Please fill all fields");
+    }
+}
+
+function login(){
+
+    let email = document.getElementById("loginEmail").value;
+    let password = document.getElementById("loginPassword").value;
+
+    let savedEmail = localStorage.getItem("email");
+    let savedPassword = localStorage.getItem("password");
+
+    if(email === savedEmail && password === savedPassword){
+
+        alert("Welcome to ReadStreak 📚");
+
+        // Redirect to home page
+        window.location.href = "dashboard.html";
+
+    }else{
+        alert("Invalid Email or Password");
+    }
+}
+
+</script>
+
+</body>
+</html>
