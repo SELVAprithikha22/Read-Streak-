@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Books - ReadStreak</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:#f7f8fc;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.logo{
+    color:#6d4aff;
+    font-size:30px;
+    font-weight:700;
+}
+
+.back-btn{
+    text-decoration:none;
+    background:#6d4aff;
+    color:white;
+    padding:10px 18px;
+    border-radius:10px;
+}
+
+.section{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    margin-top:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.05);
+}
+
+.book-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.book{
+    background:#f7f8fc;
+    padding:15px;
+    border-radius:12px;
+    position:relative;
+    cursor:pointer;
+}
+
+.book h4{
+    margin-bottom:8px;
+}
+
+.book p{
+    color:#666;
+    font-size:14px;
+}
+
+.delete{
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:red;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    padding:4px 8px;
+    font-size:12px;
+}
+
+.add-book{
+    margin-top:20px;
+    background:#6d4aff;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.progress-bar{
+    background:#ddd;
+    height:8px;
+    border-radius:5px;
+    margin-top:8px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:8px;
+    background:#6d4aff;
+}
+
+/* ================= READER ================= */
+#reader{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:white;
+    z-index:999;
+    padding:30px;
+    overflow:auto;
+}
+
+.reader-top{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.reader-btn{
+    background:#6d4aff;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.close-btn{
+    background:red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">📚 ReadStreak</div>
+        <a href="dashboard.html" class="back-btn">← Back</a>
+    </div>
+
+    <div class="section">
+        <h2>📖 My Books</h2>
+
+        <div class="book-list" id="bookList"></div>
+
+        <button class="add-book" id="addBookBtn">➕ Add New Book</button>
+    </div>
+
+</div>
+
+<!-- ================= READER ================= -->
+<div id="reader">
+
+    <div class="reader-top">
+        <button class="reader-btn close-btn" onclick="closeReader()">Close</button>
+        <button class="reader-btn" onclick="toggleBookmark()">⭐ Bookmark</button>
+    </div>
+
+    <h2 id="readerTitle"></h2>
+
+    <h4 id="chapterTitle" style="color:#6d4aff;margin-top:10px;"></h4>
+
+    <p id="readerContent" style="margin-top:20px;line-height:1.6;"></p>
+
+    <div style="margin-top:20px;display:flex;gap:10px;">
+        <button onclick="prevChapter()" class="reader-btn">⬅ Prev</button>
+        <button onclick="nextChapter()" class="reader-btn">Next ➡</button>
+    </div>
+
+</div>
+<script src="storage.js"></script>
+<script>
+
+// ================= DATA =================
+let books = JSON.parse(localStorage.getItem("books")) || [];
+let bookmarks = JSON.parse(localStorage.getItem("bookmarks")) || [];
+
+let currentBook = null;
+let currentIndex = 0;
+
+// ================= RENDER =================
+function renderBooks(){
+    const bookList = document.getElementById("bookList");
+    bookList.innerHTML = "";
+
+    if(books.length === 0){
+        bookList.innerHTML = `<p style="color:#888;text-align:center;">📚 No books yet.</p>`;
+        return;
+    }
+
+    books.forEach((book, index) => {
+
+        const div = document.createElement("div");
+        div.className = "book";
+
+        div.onclick = () => openReader(index);
+
+        div.innerHTML = `
+            <button class="delete" onclick="event.stopPropagation(); deleteBook(${index})">X</button>
+
+            <h4>${book.name}</h4>
+            <p>Progress: ${book.progress}%</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" style="width:${book.progress}%"></div>
+            </div>
+
+            <button onclick="event.stopPropagation(); updateProgress(${index})"
+                style="margin-top:10px;background:#6d4aff;color:white;border:none;padding:6px 10px;border-radius:8px;">
+                Update Progress
+            </button>
+        `;
+
+        bookList.appendChild(div);
+    });
+}
+
+// ================= ADD BOOK =================
+document.getElementById("addBookBtn").addEventListener("click", () => {
+
+    const name = prompt("Enter Book Name:");
+    if(!name) return;
+
+    let exists = books.find(b => b.name.toLowerCase() === name.toLowerCase());
+    if(exists){
+        alert("Book already exists!");
+        return;
+    }
+
+    // OFFLINE CHAPTER DATA (AUTO)
+    books.push({
+        name,
+        progress: 0,
+        chapters: [
+            "Chapter 1: Introduction\nThis is the beginning of " + name,
+            "Chapter 2: Main Ideas\nLearning continues...",
+            "Chapter 3: Conclusion\nYou finished the book!"
+        ]
+    });
+
+    localStorage.setItem("books", JSON.stringify(books));
+    renderBooks();
+});
+
+// ================= PROGRESS =================
+function updateProgress(index){
+
+    let value = prompt("Enter progress (0-100):");
+    if(value === null) return;
+
+    value = Number(value);
+
+    if(isNaN(value)) return alert("Invalid number");
+
+    if(value < 0) value = 0;
+    if(value > 100) value = 100;
+
+    books[index].progress = value;
+
+    localStorage.setItem("books", JSON.stringify(books));
+    renderBooks();
+}
+
+// ================= DELETE =================
+function deleteBook(index){
+    books.splice(index, 1);
+    localStorage.setItem("books", JSON.stringify(books));
+    renderBooks();
+}
+
+// ================= READER =================
+function openReader(index){
+
+    currentIndex = index;
+    currentBook = books[index];
+
+    document.getElementById("readerTitle").innerText = currentBook.name;
+
+    showChapter(0);
+
+    document.getElementById("reader").style.display = "block";
+}
+
+function showChapter(i){
+    currentBook = books[currentIndex];
+
+    document.getElementById("chapterTitle").innerText =
+        "Chapter " + (i + 1) + " / " + currentBook.chapters.length;
+
+    document.getElementById("readerContent").innerText =
+        currentBook.chapters[i];
+
+    currentBook.currentChapter = i;
+}
+
+// NEXT CHAPTER
+function nextChapter(){
+    if(currentBook.currentChapter < currentBook.chapters.length - 1){
+        showChapter(currentBook.currentChapter + 1);
+    }
+}
+
+// PREV CHAPTER
+function prevChapter(){
+    if(currentBook.currentChapter > 0){
+        showChapter(currentBook.currentChapter - 1);
+    }
+}
+
+// CLOSE
+function closeReader(){
+    document.getElementById("reader").style.display = "none";
+}
+
+// ================= BOOKMARK =================
+function toggleBookmark(){
+
+    if(!currentBook) return;
+
+    let exists = bookmarks.find(b => b.name === currentBook.name);
+
+    if(exists){
+        bookmarks = bookmarks.filter(b => b.name !== currentBook.name);
+        alert("Bookmark removed");
+    } else {
+        bookmarks.push(currentBook);
+        alert("Bookmarked ⭐");
+    }
+
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+}
+
+// INIT
+renderBooks();
+
+</script>
+
+</body>
+</html>
