@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🏆 Achievements - ReadStreak</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f7f8fc;
+    padding:30px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.sub{
+    text-align:center;
+    color:#666;
+    margin-bottom:25px;
+}
+
+.xp-box{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+.bar{
+    height:12px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.bar span{
+    display:block;
+    height:100%;
+    background:linear-gradient(90deg,#6d4aff,#00d4ff);
+    width:0%;
+}
+
+.section-title{
+    margin:25px 0 10px;
+    font-weight:bold;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.badge{
+    background:white;
+    padding:18px;
+    border-radius:15px;
+}
+
+.locked{
+    background:#f0f0f0;
+    color:#888;
+}
+
+.unlocked{
+    background:#eaffea;
+    color:#0b6b24;
+}
+
+.next{
+    background:white;
+    padding:15px;
+    margin-top:20px;
+    border-radius:15px;
+}
+
+.back{
+    display:block;
+    width:220px;
+    margin:40px auto 0;
+    text-align:center;
+    background:#6d4aff;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏆 Achievements</h1>
+<p class="sub">Level up your reading journey 📚🔥</p>
+
+<div class="xp-box">
+    <h3 id="levelText">Level 1</h3>
+    <p id="xpText">XP: 0 / 100</p>
+    <div class="bar"><span id="xpBar"></span></div>
+</div>
+
+<div class="section-title">🔥 Streak</div>
+<div class="grid">
+    <div class="badge locked" id="b1">7 Day Streak <div id="p1"></div></div>
+    <div class="badge locked" id="b2">30 Day Streak <div id="p2"></div></div>
+</div>
+
+<div class="section-title">📚 Books</div>
+<div class="grid">
+    <div class="badge locked" id="b3">First Book <div id="p3"></div></div>
+    <div class="badge locked" id="b4">10 Books <div id="p4"></div></div>
+</div>
+
+<div class="section-title">⏱ Time</div>
+<div class="grid">
+    <div class="badge locked" id="b5">500 Pages <div id="p5"></div></div>
+    <div class="badge locked" id="b6">20 Hours <div id="p6"></div></div>
+</div>
+
+<div class="next" id="nextBadge"></div>
+
+<a href="dashboard.html" class="back">⬅ Back to Dashboard</a>
+
+<script src="storage.js"></script>
+
+<script>
+let data = getData();
+
+/* ---------------- XP SYSTEM ---------------- */
+
+let streak = data.streak.current;
+
+let xp =
+(streak * 10) +
+(data.stats.booksRead * 20) +
+(data.stats.pagesRead * 0.1) +
+(data.stats.hoursRead * 15);
+
+let level = Math.floor(xp / 100) + 1;
+let progress = xp % 100;
+
+document.getElementById("levelText").innerText = "Level " + level;
+document.getElementById("xpText").innerText = `XP: ${Math.floor(xp)} / 100`;
+document.getElementById("xpBar").style.width = progress + "%";
+
+/* ---------------- HELPERS ---------------- */
+
+function set(id, value){
+    document.getElementById(id).innerText = value;
+}
+
+function unlock(id){
+    document.getElementById(id).classList.remove("locked");
+    document.getElementById(id).classList.add("unlocked");
+}
+
+/* ---------------- STREAK ---------------- */
+
+set("p1", `${streak}/7`);
+if(streak >= 7) unlock("b1");
+
+set("p2", `${streak}/30`);
+if(streak >= 30) unlock("b2");
+
+/* ---------------- BOOKS ---------------- */
+
+set("p3", `${data.stats.booksRead}/1`);
+if(data.stats.booksRead >= 1) unlock("b3");
+
+set("p4", `${data.stats.booksRead}/10`);
+if(data.stats.booksRead >= 10) unlock("b4");
+
+/* ---------------- TIME ---------------- */
+
+set("p5", `${data.stats.pagesRead}/500`);
+if(data.stats.pagesRead >= 500) unlock("b5");
+
+set("p6", `${data.stats.hoursRead}/20`);
+if(data.stats.hoursRead >= 20) unlock("b6");
+
+/* ---------------- NEXT ---------------- */
+
+let msg = "";
+
+if(streak < 7) msg = `🔥 Next: 7 Day Streak (${streak}/7)`;
+else if(data.stats.booksRead < 10) msg = `📚 Next: 10 Books (${data.stats.booksRead}/10)`;
+else if(data.stats.hoursRead < 20) msg = `⏱ Next: 20 Hours (${data.stats.hoursRead}/20)`;
+else msg = "🏆 All achievements unlocked! You are a pro reader!";
+
+document.getElementById("nextBadge").innerText = msg;
+</script>
+
+</body>
+</html>
