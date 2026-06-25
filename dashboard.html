@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadStreak Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+<div class="logo">
+<img src="logo.png" alt="ReadStreak Logo" width="60">
+<h2>📚 ReadStreak</h2>
+<p>Read Today. Lead Tomorrow.</p>
+</div>
+
+<nav class="menu">
+<a href="dashboard.html" class="active">🏠 Dashboard</a>
+<a href="book.html">📖 My Books</a>
+<a href="discover.html">🔍 Discover</a>
+<a href="categories.html">📂 Categories</a>
+<a href="goals.html">🎯 Reading Goals</a>
+<a href="activity.html">📈 Activity</a>
+<a href="achievements.html">🏆 Achievements</a>
+<a href="notes.html">📝 Notes</a>
+<a href="settings.html">⚙ Settings</a>
+</nav>
+
+<div class="start-card">
+<h4>Start your reading journey today!</h4>
+<button id="exploreBtn">Explore Books</button>
+</div>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- TOPBAR -->
+<header class="topbar">
+
+<input
+class="search"
+id="searchInput"
+placeholder="Search books, authors, categories..."
+>
+
+<div class="user">
+🌙
+<div>
+<p id="userName">Reader</p>
+<small id="userEmail">reader@email.com</small>
+</div>
+<img src="https://i.pravatar.cc/100" alt="User">
+</div>
+
+</header>
+
+<!-- HERO -->
+<section class="hero">
+
+<div>
+<h1>Welcome back, Reader! 👋</h1>
+<p>Let's build your reading streak today.</p>
+</div>
+
+<div class="streaks">
+
+<div class="streak-card">
+<h2 id="currentStreak">🔥 0</h2>
+<p>Current Streak</p>
+</div>
+
+<div class="streak-card">
+<h2 id="longestStreak">🏆 0</h2>
+<p>Longest Streak</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- STATS -->
+<section class="stats">
+
+<div class="card">
+<h3>Books Read</h3>
+<h1 id="booksRead">0</h1>
+</div>
+
+<div class="card">
+<h3>Pages Read</h3>
+<h1 id="pagesRead">0</h1>
+</div>
+
+<div class="card">
+<h3>Hours Read</h3>
+<h1 id="hoursRead">0</h1>
+</div>
+
+<div class="card">
+<h3>Reading Goal</h3>
+<h1 id="readingGoal">0/10</h1>
+</div>
+
+</section>
+
+<!-- BOOKS -->
+<section class="section-title">
+<h2>📚 My Books</h2>
+</section>
+
+<div class="books"></div>
+
+<button id="addBookBtn">➕ Add Book</button>
+
+<!-- ACTIVITY -->
+<section class="middle">
+
+<div class="activity">
+
+<h3>This Week's Reading Activity</h3>
+
+<div class="days">
+<div class="day"></div>
+<div class="day"></div>
+<div class="day"></div>
+<div class="day"></div>
+<div class="day"></div>
+<div class="day"></div>
+<div class="day"></div>
+</div>
+
+</div>
+
+<div class="quote">
+<h2>❝</h2>
+<p>A reader lives a thousand lives before he dies.</p>
+<small>George R.R. Martin</small>
+</div>
+
+</section>
+
+<!-- BOTTOM -->
+<section class="bottom">
+
+<div class="goal">
+<h3>Reading Goal 2026</h3>
+<div class="goal-circle" id="goalCircle">40%</div>
+</div>
+
+<div class="categories">
+<h3>Top Categories</h3>
+
+<ul>
+<li>Self Help <span>12</span></li>
+<li>Business <span>8</span></li>
+<li>Fiction <span>15</span></li>
+<li>Technology <span>10</span></li>
+<li>Psychology <span>9</span></li>
+</ul>
+
+</div>
+
+<div class="achievements">
+
+<h3>Achievements</h3>
+
+<div class="badges">
+
+<div class="badge">🔥 7 Day Streak</div>
+<div class="badge">🏆 30 Day Streak</div>
+<div class="badge">📖 First Book</div>
+<div class="badge">📚 10 Books</div>
+<div class="badge">📄 Page Turner</div>
+<div class="badge">🌙 Night Reader</div>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<!-- IMPORTANT: storage.js FIRST -->
+<script src="storage.js"></script>
+
+<!-- dashboard logic -->
+<script src="script.js"></script>
+
+</body>
+</html>
