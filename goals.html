@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Goals - ReadStreak</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f7f8fc;
+    padding:30px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.progress{
+    height:12px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:10px;
+}
+
+.progress span{
+    display:block;
+    height:100%;
+    width:0%;
+    background:#6d4aff;
+    transition:width 0.4s ease;
+}
+
+.btn{
+    margin-top:10px;
+    padding:8px 12px;
+    border:none;
+    background:#6d4aff;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn:hover{
+    background:#5636d6;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:10px 15px;
+    background:#333;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🎯 Reading Goals</h1>
+
+<div class="card">
+    <h3>Annual Goal</h3>
+    <p id="annualText"></p>
+    <div class="progress"><span id="annualBar"></span></div>
+    <button class="btn" onclick="add('annual')">+ Add Book</button>
+</div>
+
+<div class="card">
+    <h3>Monthly Goal</h3>
+    <p id="monthlyText"></p>
+    <div class="progress"><span id="monthlyBar"></span></div>
+    <button class="btn" onclick="add('monthly')">+ Add Book</button>
+</div>
+
+<div class="card">
+    <h3>Weekly Goal</h3>
+    <p id="weeklyText"></p>
+    <div class="progress"><span id="weeklyBar"></span></div>
+    <button class="btn" onclick="add('weekly')">+ Add Book</button>
+</div>
+
+<a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
+<script src="storage.js"></script>
+<script>
+// default data if nothing saved
+let goals = JSON.parse(localStorage.getItem("goals")) || {
+    annual: {done: 8, total: 20},
+    monthly: {done: 2, total: 5},
+    weekly: {done: 1, total: 2}
+};
+
+function save(){
+    localStorage.setItem("goals", JSON.stringify(goals));
+}
+
+function updateUI(){
+
+    updateCard("annual");
+    updateCard("monthly");
+    updateCard("weekly");
+
+    save();
+}
+
+function updateCard(type){
+
+    let g = goals[type];
+    let percent = (g.done / g.total) * 100;
+
+    document.getElementById(type + "Text").innerText =
+        `${g.done} / ${g.total} Books`;
+
+    document.getElementById(type + "Bar").style.width =
+        percent + "%";
+}
+
+function add(type){
+
+    if(goals[type].done < goals[type].total){
+        goals[type].done += 1;
+        updateUI();
+    } else {
+        alert("Goal already completed 🎉");
+    }
+}
+
+// first load
+updateUI();
+</script>
+
+</body>
+</html>
