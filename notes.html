@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notes - ReadStreak Pro</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f7f8fc;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+/* LAYOUT */
+.container{
+    display:flex;
+    gap:20px;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:250px;
+    background:white;
+    padding:15px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    height:400px;
+    overflow-y:auto;
+}
+
+.note-item{
+    padding:10px;
+    margin-bottom:10px;
+    background:#eee;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.note-item.active{
+    background:#6d4aff;
+    color:white;
+}
+
+/* EDITOR */
+.editor{
+    flex:1;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+textarea{
+    width:100%;
+    height:300px;
+    padding:15px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    resize:none;
+}
+
+/* BUTTONS */
+.btn{
+    margin-top:10px;
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    background:#6d4aff;
+    color:white;
+    cursor:pointer;
+}
+
+.btn.red{
+    background:#ff4d4d;
+}
+
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+}
+
+/* BACK */
+.back{
+    display:block;
+    text-align:center;
+    margin-top:20px;
+    background:#333;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    text-decoration:none;
+    width:200px;
+    margin-left:auto;
+    margin-right:auto;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📝 Notes Pro</h1>
+
+<div class="container">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <button class="btn" onclick="newNote()">+ New Note</button>
+    <div id="notesList"></div>
+</div>
+
+<!-- EDITOR -->
+<div class="editor">
+    <div class="top-bar">
+        <h3 id="title">My Note</h3>
+        <button class="btn red" onclick="deleteNote()">Delete</button>
+    </div>
+
+    <textarea id="noteText" placeholder="Write your reading notes here..."></textarea>
+
+    <button class="btn" onclick="saveNote()">Save</button>
+</div>
+
+</div>
+
+<a href="dashboard.html" class="back">⬅ Back to Dashboard</a>
+<script src="storage.js"></script>
+<script>
+
+let notes = JSON.parse(localStorage.getItem("readNotes")) || [];
+
+let currentIndex = 0;
+
+// INIT
+function init(){
+    if(notes.length === 0){
+        notes.push({title:"My First Note", text:""});
+    }
+
+    renderList();
+    loadNote(0);
+}
+
+// RENDER LIST
+function renderList(){
+    let list = document.getElementById("notesList");
+    list.innerHTML = "";
+
+    notes.forEach((n,i)=>{
+        let div = document.createElement("div");
+        div.className = "note-item";
+        if(i === currentIndex) div.classList.add("active");
+
+        div.innerText = n.title;
+
+        div.onclick = ()=> loadNote(i);
+
+        list.appendChild(div);
+    });
+}
+
+// LOAD NOTE
+function loadNote(i){
+    currentIndex = i;
+    document.getElementById("title").innerText = notes[i].title;
+    document.getElementById("noteText").value = notes[i].text;
+    renderList();
+}
+
+// SAVE NOTE
+function saveNote(){
+    notes[currentIndex].text =
+        document.getElementById("noteText").value;
+
+    localStorage.setItem("readNotes", JSON.stringify(notes));
+
+    alert("Note saved ✔");
+}
+
+// NEW NOTE
+function newNote(){
+    let title = prompt("Enter note title:");
+    if(!title) return;
+
+    notes.push({title:title, text:""});
+    currentIndex = notes.length - 1;
+
+    saveAll();
+    renderList();
+    loadNote(currentIndex);
+}
+
+// DELETE NOTE
+function deleteNote(){
+    if(notes.length === 1){
+        alert("You must keep at least one note");
+        return;
+    }
+
+    notes.splice(currentIndex,1);
+    currentIndex = 0;
+
+    saveAll();
+    renderList();
+    loadNote(currentIndex);
+}
+
+// SAVE ALL
+function saveAll(){
+    localStorage.setItem("readNotes", JSON.stringify(notes));
+}
+
+// START
+init();
+
+</script>
+
+</body>
+</html>
