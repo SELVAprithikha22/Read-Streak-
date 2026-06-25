@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Settings - ReadStreak Pro</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f7f8fc;
+    padding:30px;
+    transition:0.3s;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    margin-bottom:20px;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#4f46e5;
+    color:white;
+    margin-top:10px;
+}
+
+.books div{
+    background:#eee;
+    padding:10px;
+    margin-top:10px;
+    border-radius:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.delete-btn{
+    background:red;
+    padding:5px 10px;
+    font-size:12px;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    text-decoration:none;
+    color:#4f46e5;
+    font-weight:bold;
+}
+
+/* DARK MODE */
+.dark{
+    background:#111;
+    color:white;
+}
+
+.dark .card{
+    background:#1e1e1e;
+}
+
+.dark .books div{
+    background:#333;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚙ Settings (Pro)</h1>
+
+<div class="card">
+<h3>👤 Profile</h3>
+
+<input id="nameInput" placeholder="Enter name"><br><br>
+<input id="emailInput" placeholder="Enter email"><br>
+
+<button onclick="saveProfile()">Save Profile</button>
+
+<div id="profile" style="margin-top:15px">
+    <h2 id="userName"></h2>
+    <p id="userEmail"></p>
+</div>
+</div>
+
+<div class="card">
+<h3>📚 My Books</h3>
+
+<button id="addBookBtn">➕ Add Book</button>
+
+<div class="books"></div>
+</div>
+
+<div class="card">
+<h3>🌙 Dark Mode</h3>
+<input type="checkbox" id="darkToggle"> Enable Dark Mode
+</div>
+
+<div class="card">
+<h3>🔔 Notifications</h3>
+<input type="checkbox" checked> Enable Notifications
+</div>
+
+<a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
+<script src="storage.js"></script>
+<script>
+// -----------------------
+// LOAD PROFILE
+// -----------------------
+function loadProfile(){
+    document.getElementById("userName").textContent =
+        localStorage.getItem("name") || "Reader";
+
+    document.getElementById("userEmail").textContent =
+        localStorage.getItem("email") || "reader@email.com";
+
+    document.getElementById("nameInput").value =
+        localStorage.getItem("name") || "";
+
+    document.getElementById("emailInput").value =
+        localStorage.getItem("email") || "";
+}
+
+function saveProfile(){
+    localStorage.setItem("name", document.getElementById("nameInput").value);
+    localStorage.setItem("email", document.getElementById("emailInput").value);
+    loadProfile();
+}
+
+loadProfile();
+
+
+// -----------------------
+// BOOK SYSTEM (LOCALSTORAGE)
+// -----------------------
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+const bookContainer = document.querySelector(".books");
+
+function renderBooks(){
+    bookContainer.innerHTML = "";
+
+    books.forEach((book, index) => {
+        const div = document.createElement("div");
+
+        div.innerHTML = `
+            <span>${book}</span>
+            <button class="delete-btn" onclick="deleteBook(${index})">Delete</button>
+        `;
+
+        bookContainer.appendChild(div);
+    });
+
+    localStorage.setItem("books", JSON.stringify(books));
+}
+
+function addBook(){
+    const name = prompt("Enter Book Name");
+    if(!name) return;
+
+    books.push(name);
+    renderBooks();
+}
+
+function deleteBook(index){
+    books.splice(index, 1);
+    renderBooks();
+}
+
+document.getElementById("addBookBtn").addEventListener("click", addBook);
+
+renderBooks();
+
+
+// -----------------------
+// DARK MODE (SAVE STATE)
+// -----------------------
+const darkToggle = document.getElementById("darkToggle");
+
+function applyDarkMode(){
+    const dark = localStorage.getItem("dark") === "true";
+    document.body.classList.toggle("dark", dark);
+    darkToggle.checked = dark;
+}
+
+darkToggle.addEventListener("change", () => {
+    localStorage.setItem("dark", darkToggle.checked);
+    applyDarkMode();
+});
+
+applyDarkMode();
+</script>
+
+</body>
+</html>
