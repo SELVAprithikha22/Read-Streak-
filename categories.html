@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Categories - ReadStreak</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#f7f8fc;
+    padding:30px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.box{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    cursor:pointer;
+    transition:0.2s;
+    font-weight:bold;
+}
+
+.box:hover{
+    transform:scale(1.05);
+    background:#6d4aff;
+    color:white;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    background:#6d4aff;
+    color:white;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+}
+
+#result{
+    margin-top:25px;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    display:none;
+}
+
+.book{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    background:#f4f4f4;
+    margin:10px 0;
+    border-radius:10px;
+}
+
+button{
+    background:#6d4aff;
+    color:white;
+    border:none;
+    padding:6px 10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:disabled{
+    background:gray;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📂 Categories</h1>
+
+<div class="grid">
+<div class="box" onclick="showCategory('Self Help')">Self Help (12)</div>
+<div class="box" onclick="showCategory('Business')">Business (8)</div>
+<div class="box" onclick="showCategory('Technology')">Technology (10)</div>
+<div class="box" onclick="showCategory('Fiction')">Fiction (15)</div>
+<div class="box" onclick="showCategory('Psychology')">Psychology (9)</div>
+<div class="box" onclick="showCategory('Biography')">Biography (6)</div>
+</div>
+
+<div id="result">
+<h2 id="catTitle"></h2>
+<div id="catBooks"></div>
+</div>
+
+<a href="dashboard.html" class="back-btn">← Back</a>
+<script src="storage.js"></script>
+<script>
+
+// LOAD MY BOOKS STORAGE
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+// CATEGORY DATA
+const categoryData = {
+    "Self Help": ["Atomic Habits", "Deep Work", "The Power of Habit"],
+    "Business": ["The Lean Startup", "Zero to One"],
+    "Technology": ["Clean Code", "AI Basics"],
+    "Fiction": ["The Alchemist", "Harry Potter"],
+    "Psychology": ["Thinking Fast and Slow", "Mindset"],
+    "Biography": ["Steve Jobs", "Elon Musk"]
+};
+
+// SHOW CATEGORY
+function showCategory(name){
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("catTitle").innerText = name + " Books";
+
+    let list = categoryData[name] || [];
+
+    let html = "";
+
+    list.forEach(bookName => {
+
+        let exists = books.find(b => b.name === bookName);
+
+        html += `
+        <div class="book">
+            <span>📖 ${bookName}</span>
+            <button onclick="addToLibrary('${bookName}', this)" ${exists ? "disabled" : ""}>
+                ${exists ? "✔ Added" : "Add"}
+            </button>
+        </div>
+        `;
+    });
+
+    document.getElementById("catBooks").innerHTML = html;
+}
+
+// ADD TO MY BOOKS (CONNECTED SYSTEM)
+function addToLibrary(name, btn){
+
+    let exists = books.find(b => b.name === name);
+
+    if(exists){
+        btn.innerText = "✔ Added";
+        btn.disabled = true;
+        return;
+    }
+
+    books.push({
+        name: name,
+        progress: 0
+    });
+
+    localStorage.setItem("books", JSON.stringify(books));
+
+    btn.innerText = "✔ Added";
+    btn.disabled = true;
+
+    alert(name + " added to My Books 📚");
+}
+
+</script>
+
+</body>
+</html>
